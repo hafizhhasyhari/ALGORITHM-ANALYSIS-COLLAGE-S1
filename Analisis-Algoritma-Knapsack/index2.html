@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dynamic Programming - 0-1 Knapsack Stages</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* RESET */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #edf2f7, #cbd5e0);
+    color: #2d3748;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 2rem;
+  }
+
+  h1, h2 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+    color: #2b6cb0;
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    color: #2c5282;
+  }
+
+  .section {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s;
+  }
+
+  .section:hover {
+    transform: translateY(-3px);
+  }
+
+  .form-group label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  input[type="number"], select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #cbd5e0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  input:focus, select:focus {
+    border-color: #3182ce;
+    box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+  }
+
+  .btn {
+    padding: 0.6rem 1.2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-success { background: #38a169; }
+  .btn-warning { background: #ed8936; }
+  .btn-danger  { background: #e53e3e; }
+
+  .btn:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: #f7fafc;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  th, td {
+    padding: 0.75rem;
+    text-align: center;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  th {
+    background: #2c5282;
+    color: white;
+    text-transform: uppercase;
+  }
+
+  tr:nth-child(even) {
+    background: #edf2f7;
+  }
+
+  .stage-header {
+    background: #48bb78;
+    color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  .formula-box, .solution-summary {
+    background: #fefcbf;
+    padding: 1rem;
+    border: 2px dashed #ecc94b;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .solution-vector {
+    background: white;
+    padding: 1rem;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 8px;
+    border: 2px dashed #38a169;
+    color: #2f855a;
+  }
+
+  @media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.2rem; }
+    .form-row { flex-direction: column; }
+    input, select { font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+  <div class="container animate__animated animate__fadeIn">
+    <h1>Algoritma dan Kompleksitas - 0/1 Knapsack</h1>
+    <h2>Nama: Hafizh Hilman Asyhari | NIM: 202331206</h2>
+
+    <div class="section input-section">
+      <h2>Masukkan Data</h2>
+      <div class="form-group">
+        <label for="capacity">Kapasitas Knapsack (W):</label>
+        <input type="number" id="capacity" min="1" max="50" value="16" />
+      </div>
+
+      <div class="form-group">
+        <label>Item Baru:</label>
+        <div class="form-row" style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <div style="flex:1; min-width:120px;">
+            <label for="itemProfit">Profit (p):</label>
+            <input type="number" id="itemProfit" min="1" placeholder="Profit" />
+          </div>
+          <div style="flex:1; min-width:120px;">
+            <label for="itemWeight">Berat (w):</label>
+            <input type="number" id="itemWeight" min="1" placeholder="Berat" />
+          </div>
+          <div style="align-self: flex-end;">
+            <button onclick="addItem()" class="btn btn-warning">Tambah</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <h3>Daftar Item:</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Profit</th>
+              <th>Berat</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="itemsTableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="form-group" style="text-align:center">
+        <button class="btn btn-success" onclick="calculateDP()">Hitung Solusi</button>
+      </div>
+    </div>
+
+    <div id="problemStatement" class="section" style="display: none;">
+      <div class="stage-header">Masalah Knapsack</div>
+      <div id="problemText"></div>
+    </div>
+
+    <div id="dpStages"></div>
+
+    <div id="finalSolution" class="section solution-summary" style="display:none">
+      <h2>Solusi Optimal</h2>
+      <div id="solutionDetails" class="solution-vector"></div>
+    </div>
+  </div>
+
+  <!-- JavaScript logika disarankan ditulis terpisah di file .js untuk modularitas -->
+</body>
+</html>

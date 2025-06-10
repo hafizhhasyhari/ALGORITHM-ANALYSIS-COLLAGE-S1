@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dynamic Programming - 0-1 Knapsack Stages</title>
+<style>
+  /* Reset dan dasar styling */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+    min-height: 100vh;
+  }
+
+  /* Container utama */
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+
+  /* Judul utama dan subjudul */
+  h1 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  h2 {
+    color: #34495e;
+    margin-bottom: 10px;
+    border-bottom: 3px solid #3498db;
+    padding-bottom: 8px;
+    font-size: 1.8rem;
+  }
+
+  /* Seksi utama */
+  .section {
+    background: #fff;
+    margin-bottom: 30px;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e0e0e0;
+  }
+
+  /* Pengaturan input */
+  .input-section {
+    background: linear-gradient(135deg, #fff9c4, #f7dc6f);
+    border: 2px solid #f39c12;
+  }
+
+  /* Form group */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+
+  input[type="number"],
+  select {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  input[type="number"]:focus,
+  select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
+  }
+
+  /* Tombol */
+  button {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+
+  .btn-success {
+    background: linear-gradient(135deg, #27ae60, #229954);
+    color: #fff;
+  }
+
+  .btn-success:hover {
+    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-warning {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: #fff;
+  }
+
+  .btn-warning:hover {
+    box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .btn-danger {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+  }
+
+  .btn-danger:hover {
+    box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+    transform: translateY(-2px);
+  }
+
+  /* Tabel item */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  }
+
+  th,
+  td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+
+  th {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+
+  tr:nth-child(even) {
+    background-color: #f8f9fa;
+  }
+
+  tr:hover {
+    background-color: #e3f2fd;
+    transition: background-color 0.2s;
+  }
+
+  /* Bagian tahap DP */
+  .stage-header {
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  /* Kotak rumus dan tabel tahap */
+  .formula-box {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    border: 2px solid #f39c12;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    font-family: "Courier New", monospace;
+  }
+
+  /* Solusi akhir */
+  .solution-summary {
+    background: linear-gradient(135deg, #e8f5e8, #d4edda);
+    border: 2px solid #28a745;
+    padding: 25px;
+    border-radius: 15px;
+    margin-top: 20px;
+  }
+
+  .solution-vector {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #155724;
+    text-align: center;
+    margin: 15px 0;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    border: 2px dashed #28a745;
+  }
+
+  /* Responsiveness */
+  @media(max-width: 768px) {
+    h1 {
+      font-size: 2rem;
+    }
+    .form-row {
+      display: flex;
+      flex-direction: column;
+    }
+    table {
+      font-size: 0.9em;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Judul dan Identitas -->
+  <h1>Analisis Algoritma - Tugas Knapsack 0-1</h1>
+  <h2>Nama: Hafizh Hilman Asyhari</h2>
+  <h2>NIM: 202331206</h2>
+
+  <!-- Bagian Input dan Pengaturan -->
+  <div class="section input-section">
+    <h2>Pengaturan Masalah Knapsack</h2>
+
+    <!-- Input kapasitas -->
+    <div class="form-group">
+      <label for="capacity">Kapasitas Knapsack (W):</label>
+      <input type="number" id="capacity" min="1" max="50" value="16" />
+    </div>
+
+    <!-- Input item baru -->
+    <div class="form-group">
+      <label>Tambah Item Baru:</label>
+      <div class="form-row" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <div style="flex:1; min-width:120px;">
+          <label for="itemProfit">Profit (p):</label>
+          <input type="number" id="itemProfit" min="1" placeholder="Profit" />
+        </div>
+        <div style="flex:1; min-width:120px;">
+          <label for="itemWeight">Berat (w):</label>
+          <input type="number" id="itemWeight" min="1" placeholder="Berat" />
+        </div>
+        <div style="align-self: flex-end;">
+          <button onclick="addItem()" class="btn-warning">Tambah Item</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Daftar item -->
+    <div class="form-group">
+      <h3>Daftar Item:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Object ke-i</th>
+            <th>Profit (p)</th>
+            <th>Berat (w)</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="itemsTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Tombol Hitung -->
+    <div class="form-group" style="text-align: center;">
+      <button class="btn-success" onclick="calculateDP()">Hitung</button>
+    </div>
+  </div>
+
+  <!-- Penjelasan Masalah -->
+  <div id="problemStatement" class="section" style="display: none;">
+    <div class="stage-header">Masalah Knapsack Saat Ini</div>
+    <div id="problemText"></div>
+  </div>
+
+  <!-- Tahap DP -->
+  <div id="dpStages"></div>
+
+  <!-- Solusi akhir -->
+  <div id="finalSolution" class="section solution-summary" style="display: none;">
+    <h2>Solusi Optimal</h2>
+    <div id="solutionDetails"></div>
+  </div>
+</div>
+
+<script>
+  // Data awal
+  let items = [
+    { id: 1, p: 12, w: 6 },
+    { id: 2, p: 15, w: 5 },
+    { id: 3, p: 10, w: 10 },
+    { id: 4, p: 10, w: 5 },
+  ];
+
+  let capacity = 16;
+  let dpTable = [];
+  let nextItemId = 5;
+  let editingItemId = null;
+
+  // Fungsi memperbarui tabel item
+  function updateItemsTable() {
+    const tbody = document.getElementById("itemsTableBody");
+    tbody.innerHTML = "";
+    items.forEach((item) => {
+      const isEditing = editingItemId === item.id;
+      const row = document.createElement("tr");
+      if (isEditing) row.className = "edit-row";
+
+      row.innerHTML = `
+        <td>${item.id}</td>
+        <td>
+          ${isEditing ? `<input type="number" class="edit-input" id="editProfit${item.id}" value="${item.p}" min="1">` : item.p}
+        </td>
+        <td>
+          ${isEditing ? `<input type="number" class="edit-input" id="editWeight${item.id}" value="${item.w}" min="1">` : item.w}
+        </td>
+        <td>
+          ${
+            isEditing
+              ? `<button class="btn-success btn-small" onclick="saveItem(${item.id})">Simpan</button>
+                 <button class="btn-danger btn-small" onclick="cancelEdit()">Batal</button>`
+              : `<button class="btn-warning btn-small" onclick="editItem(${item.id})">Edit</button>
+                 <button class="btn-danger btn-small" onclick="removeItem(${item.id})">Hapus</button>`
+          }
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+
+  // Fungsi edit item
+  function editItem(id) {
+    if (editingItemId !== null) {
+      alert("Selesaikan edit item yang sedang berlangsung terlebih dahulu");
+      return;
+    }
+    editingItemId = id;
+    updateItemsTable();
+    clearResults();
+  }
+
+  // Fungsi simpan item
+  function saveItem(id) {
+    const profitVal = parseInt(document.getElementById(`editProfit${id}`).value);
+    const weightVal = parseInt(document.getElementById(`editWeight${id}`).value);
+    if (!profitVal || profitVal <= 0 || !weightVal || weightVal <= 0) {
+      alert("Masukkan nilai profit dan berat yang valid (lebih dari 0)");
+      return;
+    }
+    const index = items.findIndex((item) => item.id === id);
+    if (index !== -1) {
+      items[index].p = profitVal;
+      items[index].w = weightVal;
+    }
+    editingItemId = null;
+    updateItemsTable();
+    clearResults();
+  }
+
+  // Fungsi batal edit
+  function cancelEdit() {
+    editingItemId = null;
+    updateItemsTable();
+  }
+
+  // Fungsi tambah item baru
+  function addItem() {
+    if (editingItemId !== null) {
+      alert("Selesaikan edit item yang sedang berlangsung terlebih dahulu");
+      return;
+    }
+    const profitInput = document.getElementById("itemProfit");
+    const weightInput = document.getElementById("itemWeight");
+    const pVal = parseInt(profitInput.value);
+    const wVal = parseInt(weightInput.value);
+    if (!pVal || pVal <= 0 || !wVal || wVal <= 0) {
+      alert("Masukkan nilai profit dan berat yang valid (lebih dari 0)");
+      return;
+    }
+    items.push({ id: nextItemId++, p: pVal, w: wVal });
+    profitInput.value = "";
+    weightInput.value = "";
+    updateItemsTable();
+    clearResults();
+  }
+
+  // Fungsi hapus item
+  function removeItem(id) {
+    if (editingItemId !== null) {
+      alert("Selesaikan edit item yang sedang berlangsung terlebih dahulu");
+      return;
+    }
+    items = items.filter((item) => item.id !== id);
+    // Reassign id agar tetap berurutan
+    items.forEach((item, index) => (item.id = index + 1));
+    nextItemId = items.length + 1;
+    updateItemsTable();
+    clearResults();
+  }
+
+  // Menghapus hasil dan tahapan
+  function clearResults() {
+    document.getElementById("dpStages").innerHTML = "";
+    document.getElementById("problemStatement").style.display = "none";
+    document.getElementById("finalSolution").style.display = "none";
+  }
+
+  // Menampilkan masalah awal
+  function updateProblemStatement() {
+    capacity = parseInt(document.getElementById("capacity").value);
+    let text = `<strong>Kapasitas:</strong> W = ${capacity}<br><br>`;
+    text += "<strong>Item tersedia:</strong><br>";
+    items.forEach((item) => {
+      text += `Item ${item.id}: Profit = ${item.p}, Berat = ${item.w}<br>`;
+    });
+    text += `<br><strong>Tujuan:</strong> Maksimalkan total profit dengan kendala total berat ≤ ${capacity}`;
+    document.getElementById("problemText").innerHTML = text;
+    document.getElementById("problemStatement").style.display = "block";
+  }
+
+  // Fungsi utama hitung DP
+  function calculateDP() {
+    if (editingItemId !== null) {
+      alert("Selesaikan edit item terlebih dahulu");
+      return;
+    }
+    capacity = parseInt(document.getElementById("capacity").value);
+    if (!capacity || capacity <= 0) {
+      alert("Kapasitas harus lebih dari 0");
+      return;
+    }
+    if (items.length === 0) {
+      alert("Tambahkan minimal satu item");
+      return;
+    }
+
+    updateProblemStatement();
+
+    // Inisialisasi tabel DP
+    dpTable = [];
+    const n = items.length;
+
+    for (let i = 0; i <= n; i++) {
+      dpTable[i] = [];
+      for (let y = 0; y <= capacity; y++) {
+        if (i === 0) {
+          // baris pertama kosong
+          dpTable[i][y] = { value: 0, decision: 0, include: null, exclude: 0 };
+        } else {
+          const item = items[i - 1];
+          const exclude = dpTable[i - 1][y].value;
+          let includeVal = -Infinity;
+          if (y >= item.w) {
+            includeVal = item.p + dpTable[i - 1][y - item.w].value;
+          }
+          if (includeVal > exclude && y >= item.w) {
+            dpTable[i][y] = {
+              value: includeVal,
+              decision: 1,
+              include: includeVal,
+              exclude: exclude,
+            };
+          } else {
+            dpTable[i][y] = {
+              value: exclude,
+              decision: 0,
+              include: y >= item.w ? includeVal : null,
+              exclude: exclude,
+            };
+          }
+        }
+      }
+    }
+
+    // Tampilkan tahap DP
+    displayDPStages();
+    // Lakukan traceback untuk mendapatkan solusi
+    traceback();
+    // Tampilkan solusi akhir
+    displayFinalSolution();
+  }
+
+  // Menampilkan tahap-tahap DP
+  function displayDPStages() {
+    const container = document.getElementById("dpStages");
+    container.innerHTML = "";
+
+    for (let i = 1; i <= items.length; i++) {
+      const stageDiv = document.createElement("div");
+      stageDiv.className = "section";
+
+      const item = items[i - 1];
+      stageDiv.innerHTML = `
+        <div class="stage-header">Stage ${i}: Item ${item.id} (p = ${item.p}, w = ${item.w})</div>
+        <div class="formula-box">
+          f<sub>${i}</sub>(y) = max { f<sub>${i - 1}</sub>(y), ${item.p} + f<sub>${i - 1}</sub>(y - ${item.w}) }
+        </div>
+        <div class="stage-table">
+          ${generateStageTable(i)}
+        </div>
+      `;
+      container.appendChild(stageDiv);
+    }
+  }
+
+  // Membuat tabel tahap
+  function generateStageTable(stage) {
+    const item = items[stage - 1];
+    let html = `
+      <table>
+        <thead>
+          <tr>
+            <th>y</th>
+            <th>f<sub>${stage -1}</sub>(y)</th>
+            <th>p<sub>${stage}</sub> + f<sub>${stage -1}</sub>(y - w<sub>${stage}</sub>)</th>
+            <th>max</th>
+            <th>f<sub>${stage}</sub>(y)</th>
+            <th>Solusi</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    for (let y = 0; y <= capacity; y++) {
+      const data = dpTable[stage][y];
+      const prevData = dpTable[stage - 1][y];
+      const includeText = data.include !== null ? `${item.p} + ${dpTable[stage - 1][y - item.w]?.value || 0} = ${data.include}` : "-∞";
+      const maxText = data.include !== null ? `max(${data.exclude}, ${data.include}) = ${data.value}` : `${data.value}`;
+      
+      // Cek solusi optimal
+      const isOptimal = y === capacity && stage === items.length;
+      const vectorClass = isOptimal ? "optimal-value" : data.decision === 1 ? "decision-1" : "decision-0";
+      const solutionVector = getSolutionVectorForState(stage, y);
+      const vectorText = isOptimal ? `(${solutionVector}) ✓` : `(${solutionVector})`;
+
+      html += `
+        <tr>
+          <td><strong>${y}</strong></td>
+          <td>${prevData.value}</td>
+          <td>${includeText}</td>
+          <td>${maxText}</td>
+          <td class="${vectorClass}">${data.value}</td>
+          <td class="${vectorClass}">${vectorText}</td>
+        </tr>
+      `;
+    }
+    html += "</tbody></table>";
+    return html;
+  }
+
+  // Mendapatkan vektor solusi dari state tertentu
+  function getSolutionVectorForState(stage, y) {
+    let currentY = y;
+    const vector = [];
+    for (let i = stage; i >= 1; i--) {
+      const decision = dpTable[i][currentY].decision;
+      vector.unshift(decision);
+      if (decision === 1) {
+        currentY -= items[i - 1].w;
+      }
+    }
+    // Pastikan panjang vektor sesuai jumlah item
+    while (vector.length < items.length) {
+      vector.push(0);
+    }
+    return vector.join(", ");
+  }
+
+  // Traceback untuk mendapatkan solusi optimal
+  function traceback() {
+    let currentY = capacity;
+    for (let i = items.length; i >= 1; i--) {
+      const decision = dpTable[i][currentY].decision;
+      if (decision === 1) {
+        currentY -= items[i - 1].w;
+      }
+      // Bisa disimpan jika ingin ditampilkan langkah-langkah
+    }
+  }
+
+  // Tampilkan solusi akhir
+  function displayFinalSolution() {
+    let totalProfit = 0;
+    let totalWeight = 0;
+    const selectedItems = [];
+    let currentY = capacity;
+    const solutionVector = [];
+
+    for (let i = items.length; i >= 1; i--) {
+      const decision = dpTable[i][currentY].decision;
+      solutionVector.unshift(decision);
+      if (decision === 1) {
+        const item = items[i - 1];
+        totalProfit += item.p;
+        totalWeight += item.w;
+        currentY -= item.w;
+      }
+    }
+
+    const solutionHTML = `
+      <div class="solution-vector">
+        Solusi: (${solutionVector.join(", ")})
+      </div>
+      <div style="display: flex; gap: 20px; justify-content: center; margin-top: 20px;">
+        <div style="flex:1; max-width:200px; background:#d4edda; padding:15px; border-radius:8px; border:2px solid #28a745; text-align:center;">
+          <strong>Total Profit</strong><br>
+          <span style="font-size:1.5em; color:#155724;">${totalProfit}</span>
+        </div>
+        <div style="flex:1; max-width:200px; background:#d4edda; padding:15px; border-radius:8px; border:2px solid #17a2b8; text-align:center;">
+          <strong>Total Berat</strong><br>
+          <span style="font-size:1.5em; color:#138496;">${totalWeight} / ${capacity}</span>
+        </div>
+      </div>
+    `;
+    document.getElementById("solutionDetails").innerHTML = solutionHTML;
+    document.getElementById("finalSolution").style.display = "block";
+  }
+
+  // Inisialisasi tabel item saat halaman dimuat
+  window.onload = function() {
+    updateItemsTable();
+  };
+</script>
+</body>
+</html>
