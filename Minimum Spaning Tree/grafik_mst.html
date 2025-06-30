@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@5.8.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-b9f312ec7b391ed6fc8d7448035c80fa"}, "mark": {"type": "bar"}, "encoding": {"color": {"field": "Algoritma", "type": "nominal"}, "tooltip": [{"field": "Algoritma", "type": "nominal"}, {"field": "Total Bobot", "type": "quantitative"}], "x": {"field": "Algoritma", "title": "Algoritma", "type": "nominal"}, "y": {"field": "Total Bobot", "title": "Total Bobot", "type": "quantitative"}}, "height": 300, "title": "Total Bobot MST per Algoritma", "width": 500, "$schema": "https://vega.github.io/schema/vega-lite/v5.8.0.json", "datasets": {"data-b9f312ec7b391ed6fc8d7448035c80fa": [{"Algoritma": "Kruskal", "Total Bobot": 44, "Jumlah Edge": 6, "Rata-rata Bobot": 7.33, "Waktu Eksekusi (s)": 0.00099}, {"Algoritma": "Prim", "Total Bobot": 44, "Jumlah Edge": 6, "Rata-rata Bobot": 7.33, "Waktu Eksekusi (s)": 0.001}, {"Algoritma": "Sollin", "Total Bobot": 44, "Jumlah Edge": 6, "Rata-rata Bobot": 7.33, "Waktu Eksekusi (s)": 0.000999}, {"Algoritma": "Dijkstra", "Total Bobot": 92, "Jumlah Edge": 15, "Rata-rata Bobot": 6.13, "Waktu Eksekusi (s)": 0.0}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>
